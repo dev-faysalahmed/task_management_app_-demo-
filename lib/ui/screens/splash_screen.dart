@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _moveToNextScreen() async{
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 5));
     bool isLoggedIn = await AuthController.isUserAlreadyLoggedIn();
     if(isLoggedIn){
       await AuthController.getUserData();
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ScreenBackground(child: Center(child: SvgPicture.asset(AssetsPath.logoSvg, height: 40,))),
+      body: ScreenBackground(child: Center(child: SvgPicture.asset(AssetsPath.logoSvg, height: 150,))),
     );
   }
 }
