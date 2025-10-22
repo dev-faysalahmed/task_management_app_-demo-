@@ -49,6 +49,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     TextFormField(
                       controller: _passwordTEController,
                       decoration: InputDecoration(hintText: 'New Password'),
+                      obscureText: true,
+                      textInputAction: TextInputAction.next,
                       validator: (String? value) {
                         if(value?.length != 6){
                           return "Enter your 6 digit password";
@@ -59,6 +61,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     SizedBox(height: 8,),
                     TextFormField(
                       controller: _confirmPasswordTEController,
+                      obscureText: true,
+                        textInputAction: TextInputAction.done,
                       decoration: InputDecoration(hintText: 'Confirm Password'),
                       validator: (String? value) {
                         if(value?.length != 6){

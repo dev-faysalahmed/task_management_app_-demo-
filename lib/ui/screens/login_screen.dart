@@ -50,7 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 24,),
                     TextFormField(
                       controller: _emailTEController,
-                      decoration: InputDecoration(hintText: 'Email'),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.email_outlined),
+                          hintText: 'Email'
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (String? value) {
                         if(EmailValidator.validate(value!.trim().toString()) == false){
@@ -63,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _passwordTEController,
                       obscureText: _passwordIsNotVisiblity,
+                      textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.password),
                           suffixIcon: GestureDetector(

@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,15 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
                     SizedBox(height: 24,),
                     TextFormField(
                       controller: _emailTEController,
-                      decoration: InputDecoration(hintText: 'Email'),),
+                      decoration: InputDecoration(hintText: 'Email'),
+                      textInputAction: TextInputAction.done,
+                      validator: (String? value) {
+                        if(EmailValidator.validate(value!.trim().toString()) == false){
+                          return "Enter a valid email";
+                        }
+                        return null;
+                      },
+                    ),
                     SizedBox(height: 16,),
                     Consumer<RecoverVerifyEmailProvider>(
                       builder: (context, provider, _) {
@@ -98,7 +107,9 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
 
 
   void _onTapNextButton(){
-    recoverVerifyEmail();
+    if(_formKey.currentState!.validate()){
+      recoverVerifyEmail();
+    }
     //Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordVerifyOtpScreen(),));
   }
 

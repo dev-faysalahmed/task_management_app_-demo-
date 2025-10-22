@@ -43,8 +43,8 @@ class _TMAppBarState extends State<TMAppBar> {
               spacing: 8,
               children: [
                 CircleAvatar(
-                  backgroundImage: profilePhoto.isNotEmpty ? MemoryImage(base64Decode(profilePhoto)) : null,
-                  child: profilePhoto.isNotEmpty ? null : Icon(Icons.person, size: 40),
+                  backgroundImage: authController.model!.photo.isNotEmpty ? MemoryImage(base64Decode(profilePhoto)) : null,
+                  child: authController.model!.photo.isNotEmpty ? null : Icon(Icons.person, size: 40),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

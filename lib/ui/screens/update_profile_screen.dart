@@ -79,6 +79,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   SizedBox(height: 8,),
                   TextFormField(
                     controller: _firstNameTEController,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(hintText: 'First Name'),
                     validator: (String? value){
                       if(value?.trim().isEmpty ?? true){
@@ -90,6 +91,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   SizedBox(height: 8,),
                   TextFormField(
                     controller: _lastNameTEController,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(hintText: 'Last Name'),
                     validator: (String? value){
                       if(value?.trim().isEmpty ?? true){
@@ -101,6 +103,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   SizedBox(height: 8,),
                   TextFormField(
                     controller: _mobileTEController,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(hintText: 'Mobile'),
                     validator: (String? value){
                       if(value?.trim().isEmpty ?? true){
@@ -114,6 +117,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   SizedBox(height: 8,),
                   TextFormField(
                     controller: _passwordTEController,
+                    textInputAction: TextInputAction.done,
                     obscureText: true, decoration: InputDecoration(hintText: 'Password (Optional)'),
                     validator: (String? value){
                       if((value != null && value.isNotEmpty) && value.length<6){
