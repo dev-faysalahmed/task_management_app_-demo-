@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_project/ui/controller/auth_controller.dart';
+import 'package:task_management_project/ui/screens/login_screen.dart';
 import 'package:task_management_project/ui/screens/update_profile_screen.dart';
 
-class TMAppBar extends StatelessWidget implements PreferredSizeWidget{
+class TMAppBar extends StatefulWidget implements PreferredSizeWidget{
   const TMAppBar({
     super.key, this.fromUpdateProfile,
   });
@@ -9,43 +14,60 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget{
   final bool? fromUpdateProfile;
 
   @override
+  State<TMAppBar> createState() => _TMAppBarState();
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+
+class _TMAppBarState extends State<TMAppBar> {
+
+  final profilePhoto = AuthController.userModel!.photo;
+
+  @override
   Widget build(BuildContext context) {
     return AppBar(
       foregroundColor: Colors.white,
       backgroundColor: Colors.green,
-      title: GestureDetector(
-        onTap: (){
-          if(fromUpdateProfile ?? false){
-            return;
-          }
-          Navigator.pushNamed(context, UpdateProfileScreen.name);
-        },
-        child: Row(
-          spacing: 8,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage('assets/images/faysal_ahmed.jpg'),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      title: Consumer<AuthController>(
+        builder: (context, authController, _) {
+          return GestureDetector(
+            onTap: (){
+              if(widget.fromUpdateProfile ?? false){
+                return;
+              }
+              Navigator.pushNamed(context, UpdateProfileScreen.name);
+            },
+            child: Row(
+              spacing: 8,
               children: [
-                Text('Faysal Ahmed', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),),
-                Text('Mobile App Developer', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
+                CircleAvatar(
+                  backgroundImage: profilePhoto.isNotEmpty ? MemoryImage(base64Decode(profilePhoto)) : null,
+                  child: profilePhoto.isNotEmpty ? null : Icon(Icons.person, size: 40),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(authController.model?.fullName ?? '', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),),
+                    Text(authController.model?.email ?? '', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
+          );
+        }
       ),
       actions: [
-        IconButton(onPressed: (){}, icon: Icon(Icons.logout, color: Colors.white,))
+        IconButton(onPressed: _signOut, icon: Icon(Icons.logout, color: Colors.white,))
       ],
     );
   }
 
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
+  Future<void> _signOut()async{
+    await AuthController.clearUserData();
+    Navigator.pushNamedAndRemoveUntil(context, LoginScreen.name, (predicate)=> false);
+  }
 }
 
 

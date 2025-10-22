@@ -2,13 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:task_management_project/ui/controller/recover_verify_otp_provider.dart';
 import 'package:task_management_project/ui/screens/login_screen.dart';
 import 'package:task_management_project/ui/screens/reset_password_screen.dart';
 import 'package:task_management_project/ui/screens/signup_screen.dart';
 import 'package:task_management_project/ui/widgets/screen_background.dart';
+import 'package:task_management_project/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
-  const ForgotPasswordVerifyOtpScreen({super.key});
+  const ForgotPasswordVerifyOtpScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<ForgotPasswordVerifyOtpScreen> createState() => _ForgotPasswordVerifyOtpScreenState();
@@ -19,70 +24,83 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
   final TextEditingController _otpTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final RecoverVerifyOtpProvider _recoverVerifyOtpProvider = RecoverVerifyOtpProvider();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ScreenBackground(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 82,),
-                  Text('Enter Your OTP', style: Theme.of(context).textTheme.titleLarge),
-                  SizedBox(height: 4,),
-                  Text('A 6 digit OTP has been sent to your email address.', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
-                  SizedBox(height: 24,),
+    return ChangeNotifierProvider(
+      create: (context) => _recoverVerifyOtpProvider,
+      child: Scaffold(
+        body: ScreenBackground(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 82,),
+                    Text('Enter Your OTP', style: Theme.of(context).textTheme.titleLarge),
+                    SizedBox(height: 4,),
+                    Text('A 6 digit OTP has been sent to your email address.', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
+                    SizedBox(height: 24,),
 
-                  PinCodeTextField(
-                    length: 6,
-                    keyboardType: TextInputType.number,
-                    obscureText: false,
-                    animationType: AnimationType.fade,
-                    pinTheme: PinTheme(
-                      shape: PinCodeFieldShape.box,
-                      borderRadius: BorderRadius.circular(5),
-                      fieldHeight: 50,
-                      fieldWidth: 40,
-                      activeFillColor: Colors.white,
-                      inactiveColor: Colors.black
+                    PinCodeTextField(
+                      length: 6,
+                      keyboardType: TextInputType.number,
+                      obscureText: false,
+                      animationType: AnimationType.fade,
+                      pinTheme: PinTheme(
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(5),
+                        fieldHeight: 50,
+                        fieldWidth: 40,
+                        activeFillColor: Colors.white,
+                        inactiveColor: Colors.black
+                      ),
+                      animationDuration: Duration(milliseconds: 300),
+                      backgroundColor: Colors.transparent,
+                      controller: _otpTEController,
+                      appContext: context,
                     ),
-                    animationDuration: Duration(milliseconds: 300),
-                    backgroundColor: Colors.transparent,
-                    controller: _otpTEController,
-                    appContext: context,
-                  ),
 
-                  SizedBox(height: 16,),
-                  FilledButton(
-                      onPressed: _onTapVerifyButton,
-                      child: Text('Verify')
-                  ),
-                  SizedBox(height: 36,),
-                  Center(
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-                          text: "Already have an account? ",
-                          children: [
-                            TextSpan(
-                              text: 'Login',
-                              style: TextStyle(color: Colors.green,),
-                              recognizer: TapGestureRecognizer()..onTap = _onTapLoginButton,
-          
-          
-                            )
-                          ]
-                        )),
-                      ],
+                    SizedBox(height: 16,),
+                    Consumer<RecoverVerifyOtpProvider>(
+                      builder: (context, provider, _) {
+                        return Visibility(
+                          visible: provider.recoverVerifyOtpInProgress == false,
+                          replacement: Center(child: CircularProgressIndicator(),),
+                          child: FilledButton(
+                              onPressed: _onTapVerifyButton,
+                              child: Text('Verify')
+                          ),
+                        );
+                      }
                     ),
-                  ),
-                ],
+                    SizedBox(height: 36,),
+                    Center(
+                      child: Column(
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+                            text: "Already have an account? ",
+                            children: [
+                              TextSpan(
+                                text: 'Login',
+                                style: TextStyle(color: Colors.green,),
+                                recognizer: TapGestureRecognizer()..onTap = _onTapLoginButton,
+
+
+                              )
+                            ]
+                          )),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -98,7 +116,8 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
 
   }
   void _onTapVerifyButton(){
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(),), (predicate) => false,);
+    verifyOtp();
+    //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(),), (predicate) => false,);
   }
 
   @override
@@ -106,4 +125,16 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
     _otpTEController.dispose();
     super.dispose();
   }
+
+  Future<void> verifyOtp()async{
+    final bool isSuccess = await _recoverVerifyOtpProvider.otpVerify(widget.email, _otpTEController.text.trim());
+
+    if(isSuccess){
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(email: widget.email, otp: _otpTEController.text.trim()),));
+
+    }else{
+      snackBarMessage(context, 'OTP Wrong');
+    }
+  }
+
 }
